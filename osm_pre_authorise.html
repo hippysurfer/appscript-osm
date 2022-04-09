@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+  <head>    
+    <link rel="stylesheet" href="https://ssl.gstatic.com/docs/script/css/add-ons1.css">
+    <base target="_top">
+    <script src="https://apis.google.com/js/api.js?onload=onApiLoad"></script>
+    <script>
+      // Prevent forms from submitting.
+      function preventFormSubmit() {
+        var forms = document.querySelectorAll('form');
+        for (var i = 0; i < forms.length; i++) {
+          forms[i].addEventListener('submit', function(event) {
+            event.preventDefault();
+          });
+        }
+      }
+      window.addEventListener('load', preventFormSubmit);
+
+      function handleFormSubmit(formObject) {
+        google.script.run
+        .withSuccessHandler(updateUrl)
+        .withFailureHandler(showFailed)
+        .osm_do_pre_authorise(formObject);
+      }
+      function updateUrl(url) {
+        var div = document.getElementById('output');
+        div.innerHTML = '<p>Got it! - now click on OSM -> Authorise to complete the authorization.</p>';
+      }
+      function showFailed(url) {
+        var div = document.getElementById('output');
+        div.innerHTML = '<p>Failed!</p>';
+      }
+    </script>
+  </head>
+  <body>
+    Instructions:
+    <ol>
+      <li>Log in to OSM (in a seperate window).</li>
+      <li>Select 'Settings -> My Account Details -> Developer Tools'.</li>
+      <li>Click on 'CREATE APPLICATION'</li>
+      <li>Enter the Application Name: <b><?= app_name ?></b></li>
+      <li>Copy the Client ID and Secret into the fields below.</li>
+      <li>Click Close on OSM</li>
+      <li>Click on the newly added Application on OSM.</li>
+      <li>Enter the following URL into the <i>Redirect URLs</i>: <b><?= redirect_url ?></b></li>
+      <li>Click Save on OSM.</li>
+      <li>Click Submit below and then select <i>OSM -> Authorise</i></li>
+    </ol>
+    <form id="myForm" onsubmit="handleFormSubmit(this)">
+    <div class="form-group">
+      <label for="clientid">Client ID</label>
+      <input type="password" name="clientid" id="clientid" style="width: 150px;">
+    </div>
+    <div class="form-group">
+      <label for="secret">Secret</label>
+      <input type="password" name="secret" id="secret" style="width: 150px;">
+    </div>
+      <input type="submit" value="Submit" />
+    </form>
+    <div id="output"></div>
+
+    <!--<input type="button" value="Close"
+        onclick="google.script.host.close()" />-->
+  </body>
+</html>
